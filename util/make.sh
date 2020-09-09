@@ -2,9 +2,9 @@
 # Make.sh
 
 # Get location of WINE executable; fail if not found.
-WINEBIN=$(which wine)
-if [ "$1" = "dev.TxROM" ] && [ "${WINEBIN}" = "" ]; then
-	echo "WINE is needed to compile this version of the ROM. Please install."
+MONOBIN=$(which mono)
+if [ "$1" = "dev.TxROM" ] && [ "${MONOBIN}" = "" ]; then
+	echo "Mono is needed to compile this version of the ROM. Please install."
 	exit 1
 fi
 
@@ -24,7 +24,7 @@ SRCDIR=$1
 # Copy data/code from the source directory to the work directory.
 echo -n Copying make files...
 cp $SRCDIR/make.txt $WORKDIR/make.txt 2>/dev/null
-echo -ne "\n" >> $WORKDIR/make.txt
+echo -n "\n" >> $WORKDIR/make.txt
 echo [done]
 
 if [ -d $SRCDIR/data ]; then
@@ -59,10 +59,10 @@ do
 		echo -n "Mapping ${f2}: "
 		./util/ophis21/bin/ophis -m "${WORKDIR}/map.txt" "${WORKDIR}/${f2}"
 		rm -f "ophis.bin"
-		$WINEBIN ./util/GetLabels.exe "${WORKDIR}/map.txt" "${WORKDIR}/${f3}" "${f4}" "${f5}"
+		$MONOBIN ./util/GetLabels.exe "${WORKDIR}/map.txt" "${WORKDIR}/${f3}" "${f4}" "${f5}"
 	elif [ "$f1" = "prg" ]; then
 		echo -n "Assembling ${f2}: "
-		./util/ophis21/bin/ophis -o "${WORKDIR}/${f3}.bin" "${WORKDIR}/PRG/${f3}.asm"
+		./util/ophis21/bin/ophis -o "${WORKDIR}/${f3}.bin" -m "${WORKDIR}/${f3}.txt" "${WORKDIR}/PRG/${f3}.asm"
 		echo ".incbin \"${f3}.bin\"" >> $WORKDIR/make.asm
 	fi
 done < $WORKDIR/make.txt
